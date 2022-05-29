@@ -25,6 +25,8 @@ public class PlayerController : MonoBehaviour
     public bool kicked;
     public float holeX, holeY;
     public int fallSong;
+    public Animator animator;
+    public SpriteRenderer sprite;
 
     #region Object References
 
@@ -33,8 +35,8 @@ public class PlayerController : MonoBehaviour
 
     #endregion
     #region Ground Detection
-    private Vector2 _groundDetectionOffset = new Vector2(0, -0.505f);
-    private Vector2 _groundDetectionSize = new Vector2(0.75f, 0.1366799f);
+    [SerializeField] private Vector2 _groundDetectionOffset = new Vector2(0, -0.505f);
+    [SerializeField] private Vector2 _groundDetectionSize = new Vector2(0.75f, 0.1366799f);
     #endregion
 
     #region Sounds
@@ -179,13 +181,26 @@ public class PlayerController : MonoBehaviour
 
             _spriteRoot.transform.eulerAngles = rotation;
         }
+
+        if (_movement.x == 0)
+        {
+            animator.SetBool("Walking", false);
+        }
+        else
+        {
+            sprite.flipX = _movement.x < 0;
+            animator.SetBool("Walking", true);
+        }
+        animator.SetBool("Jumping", _jump);
+        animator.SetBool("Ghost", isGhost);
+        animator.SetBool("Dead", _dying);
     }
 
     private void OnNavigate(InputValue value)
     {
         _movement = value.Get<Vector2>();
     }
-        private void OnJump(InputValue value)
+    private void OnJump(InputValue value)
     {
         _jump = (value.Get<float>() == 1);
         if (!_jump)
@@ -249,9 +264,11 @@ public class PlayerController : MonoBehaviour
 
         GameObject body = Instantiate(_spriteRoot, _spriteRoot.transform.position, _spriteRoot.transform.rotation);
         body.layer = 6;
+        body.GetComponent<Animator>().enabled = false;
         Rigidbody2D bodyRB = body.AddComponent(typeof(Rigidbody2D)) as Rigidbody2D;
         bodyRB.mass = 9999;
-        body.AddComponent(typeof(CapsuleCollider2D));
+        CapsuleCollider2D capsule = body.AddComponent(typeof(CapsuleCollider2D)) as CapsuleCollider2D;
+        capsule.size = new Vector2(1.95f, 6.24f); //2.44
         _spriteRoot.SetActive(false);
         _rb2d.constraints = RigidbodyConstraints2D.FreezeAll;
         yield return new WaitForSeconds(1.5f);
