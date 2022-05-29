@@ -7,6 +7,8 @@ public class RoomContainer : MonoBehaviour
     public GameObject[] objects;
     public Platform[] platforms;
     public CameraManager cameraManager;
+    public int music = -1;
+    public PlayerController player;
 
     public void Enable()
     {
@@ -14,7 +16,22 @@ public class RoomContainer : MonoBehaviour
         {
             g.SetActive(true);
         }
-        //TO-DO: Change music
+        
+        if (player != null)
+        {
+            if (!player.dying)
+            {
+                AudioManager.instance.ChangeSong(music);
+            }
+            else
+            {
+                player.fallSong = music;
+            }
+        }
+        else
+        {
+            AudioManager.instance.ChangeSong(music);
+        }
     }
     public void Disable()
     {

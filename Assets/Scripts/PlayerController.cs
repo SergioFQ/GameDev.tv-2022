@@ -18,11 +18,13 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float _maxFallSpeed;
     public bool isGhost;
     private bool _dying;
+    public bool dying { get {return _dying;} set {_dying = value;} }
     private float _dieTimer;
     private bool _ghosting;
     public bool elevator;
     public bool kicked;
     public float holeX, holeY;
+    public int fallSong;
 
     #region Object References
 
@@ -206,6 +208,7 @@ public class PlayerController : MonoBehaviour
             _ghosting = false;
             _dieTimer = 0;
             //TO-DO: Play sound effect
+            AudioManager.instance.ChangeSong(-1, 0, 0);
         }
         else if (col.CompareTag("Bird") && !kicked)
         {
@@ -241,6 +244,8 @@ public class PlayerController : MonoBehaviour
             _spriteRoot.SetActive(true);
             _spriteRoot.transform.rotation = Quaternion.identity;
         }
+
+        AudioManager.instance.ChangeSong(fallSong);
 
         _dying = false;
         _rb2d.velocity = Vector2.zero;

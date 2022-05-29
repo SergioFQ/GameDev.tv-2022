@@ -35,8 +35,8 @@ public class ElevatorController : MonoBehaviour
         player.transform.SetParent(this.transform);
         doors.sortingOrder = 3;
         doorAnimator?.SetTrigger("Close");
+        AudioManager.instance.ChangeSong(3, 2, 2);
         yield return new WaitForSeconds(2);
-        //TO-DO: Elevator music
         float elapsedTime = 0;
         float maxTime = 30;
         Vector2 firstPos = new Vector2(transform.position.x, _startY);
@@ -44,14 +44,15 @@ public class ElevatorController : MonoBehaviour
 
         while (elapsedTime < maxTime)
         {
-            //TO-DO: Set music speed
+            AudioManager.instance.SetSpeed(player.jump ? 2 : 1);
             elapsedTime += Time.fixedDeltaTime * (player.jump ? 2 : 1);
             transform.position = Vector2.Lerp(firstPos, lastPos, elapsedTime/maxTime);
 
             yield return new WaitForFixedUpdate();
         }
 
-        //TO-DO: Reset music speed
+        AudioManager.instance.SetSpeed(1);
+        AudioManager.instance.ChangeSong(-1);
         transform.position = lastPos;
         doorAnimator?.SetTrigger("Open");
         doors.sortingOrder = 1;
