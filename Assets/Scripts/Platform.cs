@@ -13,6 +13,9 @@ public class Platform : MonoBehaviour
     private Vector3 _startPos;
     private Rigidbody2D _rb2d;
     public float speed = 2;
+    #region Sounds
+    public AudioSource platformSound;
+    #endregion
 
     void Start()
     {
@@ -73,7 +76,8 @@ public class Platform : MonoBehaviour
     void OnCollisionEnter2D(Collision2D col)
     {
         if (col.gameObject.CompareTag("Player"))
-        {
+        {            
+            if(!_activated)platformSound.Play();
             _activated = true;
         }
     }

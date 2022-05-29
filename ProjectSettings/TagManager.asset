@@ -8,6 +8,7 @@ TagManager:
   - KillZone
   - KillZone2
   - Bird
+  - Reviver
   layers:
   - Default
   - TransparentFX

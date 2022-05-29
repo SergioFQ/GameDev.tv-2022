@@ -37,6 +37,17 @@ public class PlayerController : MonoBehaviour
     private Vector2 _groundDetectionSize = new Vector2(0.75f, 0.1366799f);
     #endregion
 
+    #region Sounds
+    public AudioSource jumpSound;
+    public AudioSource fallSound;
+    public AudioSource fakeDeathAlive;
+    public AudioSource fakeDeathGhost;
+    public AudioSource realDeath;
+    public AudioSource realDeathGhost;
+    public AudioSource hitBirdsSound;
+    public AudioSource reviveSound;
+    #endregion
+
     
     void Start()
     {
@@ -103,6 +114,7 @@ public class PlayerController : MonoBehaviour
                 {
                     _grounded = true;
                     //Squash
+                    if(!isGhost)fallSound.Play();
                 }
             }
             else
@@ -151,7 +163,8 @@ public class PlayerController : MonoBehaviour
                 if (_grounded)
                 {
                     _grounded = false;
-                    //Stretch
+                    //Stretch                    
+                    jumpSound.Play();
                 }
             }
             
@@ -207,18 +220,31 @@ public class PlayerController : MonoBehaviour
             _dying = true;
             _ghosting = false;
             _dieTimer = 0;
-            //TO-DO: Play sound effect
+            if(isGhost)
+                fakeDeathGhost.Play();
+            else
+                fakeDeathAlive.Play();
             AudioManager.instance.ChangeSong(-1, 0, 0);
         }
         else if (col.CompareTag("Bird") && !kicked)
         {
+            hitBirdsSound.Play();
             StartCoroutine(Bird());
+        }
+        else if (col.CompareTag("Reviver") && !elevator && isGhost)
+        {
+            reviveSound.Play();
+            StartCoroutine(Revive());
         }
     }
 
     public IEnumerator TurnIntoGhost()
     {
         if (_ghosting) yield break;
+        if(isGhost)
+            realDeathGhost.Play();
+        else
+            realDeath.Play();
         _ghosting = true;
 
         GameObject body = Instantiate(_spriteRoot, _spriteRoot.transform.position, _spriteRoot.transform.rotation);
@@ -275,5 +301,27 @@ public class PlayerController : MonoBehaviour
 
         _dying = true;
         _dieTimer = 2;
+    }
+
+    private IEnumerator Revive()
+    {
+        float elapsedTime = 0;
+        float maxTime = 1.7f;
+        Vector2 firstPos = new Vector2(transform.position.x, transform.position.y);
+        Vector2 lastPos = new Vector2(transform.position.x, transform.position.y + 1.0f);
+
+        elevator = true;
+
+        while (elapsedTime < maxTime)
+        {
+            elapsedTime += Time.fixedDeltaTime;
+            transform.position = Vector2.Lerp(firstPos, lastPos, elapsedTime/maxTime);
+
+            yield return new WaitForFixedUpdate();
+        }
+
+        elevator = false;
+
+        isGhost = false;
     }
 }
