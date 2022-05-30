@@ -104,6 +104,7 @@ public class PlayerController : MonoBehaviour
             if (hit.collider != null)
             {
                 //TO-DO: Fall sound effect
+                
                 StartCoroutine(TurnIntoGhost());
             }
         }
@@ -235,6 +236,7 @@ public class PlayerController : MonoBehaviour
     {
         if (((col.CompareTag("KillZone") && !isGhost) || (col.CompareTag("KillZone2"))) && !_dying)
         {
+            _UIController.ChangeHeart(false);
             _dying = true;
             _ghosting = false;
             _dieTimer = 0;
@@ -251,6 +253,7 @@ public class PlayerController : MonoBehaviour
         }
         else if (col.CompareTag("Reviver") && !elevator && isGhost)
         {
+            col.gameObject.SetActive(false);
             reviveSound.Play();
             StartCoroutine(Revive());
         }
@@ -281,7 +284,6 @@ public class PlayerController : MonoBehaviour
         {
             transform.position = body.transform.position + new Vector3(0, 1, 0);
             isGhost = true;
-            _UIController.ChangeHeart(false);
             _spriteRoot.SetActive(true);
             _spriteRoot.transform.rotation = Quaternion.identity;
         }
