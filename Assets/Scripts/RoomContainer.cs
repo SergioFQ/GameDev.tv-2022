@@ -17,6 +17,11 @@ public class RoomContainer : MonoBehaviour
             g.SetActive(true);
         }
         
+        foreach (Platform p in platforms)
+        {
+            p.ResetPlatform();
+        }
+        
         if (player != null)
         {
             if (!player.dying)
@@ -38,10 +43,6 @@ public class RoomContainer : MonoBehaviour
         foreach (GameObject g in objects)
         {
             g.SetActive(false);
-        }
-        foreach (Platform p in platforms)
-        {
-            p.ResetPlatform();
         }
     }
 

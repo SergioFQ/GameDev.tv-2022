@@ -27,6 +27,7 @@ public class PlayerController : MonoBehaviour
     public int fallSong;
     public Animator animator;
     public SpriteRenderer sprite;
+    public CapsuleCollider2D col;
 
     #region Object References
 
@@ -49,9 +50,10 @@ public class PlayerController : MonoBehaviour
     public AudioSource realDeathGhost;
     public AudioSource hitBirdsSound;
     public AudioSource reviveSound;
+    public GameObject fallLimiter;
     #endregion
 
-    
+
     void Start()
     {
         _rb2d = GetComponent<Rigidbody2D>();
@@ -92,7 +94,7 @@ public class PlayerController : MonoBehaviour
                 }
                 
 
-                _spriteRoot.transform.Rotate(new Vector3(0, 0, 5));
+                _spriteRoot.transform.Rotate(new Vector3(0, 0, isGhost ? 4 : 6));
             }
             else
             {
@@ -107,7 +109,7 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
-            _rb2d.gravityScale = isGhost ? 2 : 4;
+            _rb2d.gravityScale = isGhost ? 3 : 4;
             //Check if grounded
             RaycastHit2D hit = Physics2D.BoxCast((Vector2)transform.position + _groundDetectionOffset, _groundDetectionSize, 0, Vector2.zero, 1, _groundLayer);
             if (hit.collider != null)
@@ -171,7 +173,7 @@ public class PlayerController : MonoBehaviour
                 }
             }
             
-            vel.y = Mathf.Clamp(vel.y, _maxFallSpeed, _maxSpeed.y);
+            vel.y = Mathf.Clamp(vel.y, _maxFallSpeed * (isGhost ? 0.5f : 1), _maxSpeed.y);
 
             _rb2d.velocity = vel;
 
@@ -264,6 +266,7 @@ public class PlayerController : MonoBehaviour
         _ghosting = true;
 
         GameObject body = Instantiate(_spriteRoot, _spriteRoot.transform.position, _spriteRoot.transform.rotation);
+        body.transform.localScale = transform.localScale;
         body.layer = 6;
         body.GetComponent<Animator>().enabled = false;
         Rigidbody2D bodyRB = body.AddComponent(typeof(Rigidbody2D)) as Rigidbody2D;
@@ -307,6 +310,8 @@ public class PlayerController : MonoBehaviour
         elevator = true;
         kicked = true;
 
+        fallLimiter.SetActive(false);
+
         while (elapsedTime < maxTime)
         {
             elapsedTime += Time.fixedDeltaTime;
@@ -314,6 +319,8 @@ public class PlayerController : MonoBehaviour
 
             yield return new WaitForFixedUpdate();
         }
+
+        fallLimiter.SetActive(true);
 
         elevator = false;
         kicked = false;

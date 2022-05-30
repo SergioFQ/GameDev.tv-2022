@@ -13,6 +13,7 @@ public class Platform : MonoBehaviour
     private Vector3 _startPos;
     private Rigidbody2D _rb2d;
     public float speed = 2;
+    public SpriteRenderer sprite;
     #region Sounds
     public AudioSource platformSound;
     #endregion
@@ -37,10 +38,10 @@ public class Platform : MonoBehaviour
             else
             {
                 vel.x = 0;
-                vel.y = -6;
+                vel.y = -12;
             }
         }
-        if (_fallTimer > 0)
+        if (_fallTimer > 0 || _fallTimer == -1)
         {
             if (isMoving)
             {
@@ -71,12 +72,19 @@ public class Platform : MonoBehaviour
 
 
         _rb2d.velocity = vel;
+
+        if (sprite != null)
+        {
+            sprite.flipX = !isMovingRight;
+        }
     }
 
     void OnCollisionEnter2D(Collision2D col)
     {
         if (col.gameObject.CompareTag("Player"))
         {            
+            if (maxFallTime == -1) return;
+            if (!col.enabled) return;
             if(!_activated)platformSound.Play();
             _activated = true;
         }

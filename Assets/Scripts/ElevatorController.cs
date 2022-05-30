@@ -12,6 +12,7 @@ public class ElevatorController : MonoBehaviour
     private float _startY;
     private bool _moving;
     public float endPlayerX;
+    public AudioSource kickSound;
 
     
     void Start()
@@ -31,6 +32,7 @@ public class ElevatorController : MonoBehaviour
     public IEnumerator ElevatorMovement()
     {
         player.elevator = true;
+        player.col.isTrigger = true;
         yield return new WaitForSeconds(1);
         player.transform.SetParent(this.transform);
         doors.sortingOrder = 3;
@@ -38,7 +40,7 @@ public class ElevatorController : MonoBehaviour
         AudioManager.instance.ChangeSong(3, 2, 2);
         yield return new WaitForSeconds(2);
         float elapsedTime = 0;
-        float maxTime = 30;
+        float maxTime = 29;
         Vector2 firstPos = new Vector2(transform.position.x, _startY);
         Vector2 lastPos = new Vector2(transform.position.x, endY);
 
@@ -55,14 +57,17 @@ public class ElevatorController : MonoBehaviour
         AudioManager.instance.ChangeSong(-1);
         transform.position = lastPos;
         doorAnimator?.SetTrigger("Open");
+        yield return new WaitForSeconds(2);
         doors.sortingOrder = 1;
 
         legAnimator?.SetTrigger("Kick");
 
-        yield return new WaitForSeconds(2);
+        yield return new WaitForSeconds(3.25f);
+        kickSound.Play();
 
         player.kicked = true;
         player.transform.SetParent(null);
+        player.col.isTrigger = false;
         
         elapsedTime = 0;
         maxTime = 6;
