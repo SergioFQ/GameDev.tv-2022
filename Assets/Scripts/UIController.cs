@@ -7,6 +7,8 @@ public class UIController : MonoBehaviour
     public float distanceToMove;
     public float speed;
     public GameObject panel;
+    public GameObject heartAlive;
+    public GameObject heartDead;
 
     private float _startY;
     private bool _isOpen = false;
@@ -18,7 +20,7 @@ public class UIController : MonoBehaviour
     /// </summary>
     void Start()
     {
-        _startY = panel.transform.position.y;
+        _startY = panel.transform.localPosition.y;
         _isMoving = false;
         _isOpen = false;
     }
@@ -31,9 +33,9 @@ public class UIController : MonoBehaviour
         {
             if(_isMoving)
             {
-                if(_startY-distanceToMove < panel.transform.position.y)
+                if(_startY-distanceToMove < panel.transform.localPosition.y)
                 {
-                    panel.transform.position -= new Vector3(0.0f, speed*Time.deltaTime, 0.0f); 
+                    panel.transform.localPosition -= new Vector3(0.0f, speed*Time.deltaTime, 0.0f); 
                 }
                 else
                 {
@@ -44,9 +46,9 @@ public class UIController : MonoBehaviour
         else
             if(_isMoving)
             {
-                if(_startY > panel.transform.position.y)
+                if(_startY > panel.transform.localPosition.y)
                 {
-                    panel.transform.position += new Vector3(0.0f, speed*Time.deltaTime, 0.0f); 
+                    panel.transform.localPosition += new Vector3(0.0f, speed*Time.deltaTime, 0.0f); 
                 }
                 else
                     _isMoving = false;    
@@ -57,5 +59,19 @@ public class UIController : MonoBehaviour
     {
         _isOpen = !_isOpen;
         _isMoving = true;
+    }
+
+    public void ChangeHeart(bool isAlive)
+    {
+        if(isAlive)
+        {
+            heartAlive.SetActive(true);
+            heartDead.SetActive(false);
+        }
+        else
+        {
+            heartAlive.SetActive(false);
+            heartDead.SetActive(true);
+        }
     }
 }

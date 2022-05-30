@@ -32,6 +32,7 @@ public class PlayerController : MonoBehaviour
 
     [SerializeField] private LayerMask _groundLayer;
     [SerializeField] private GameObject _spriteRoot;
+    [SerializeField] private UIController _UIController;
 
     #endregion
     #region Ground Detection
@@ -277,6 +278,7 @@ public class PlayerController : MonoBehaviour
         {
             transform.position = body.transform.position + new Vector3(0, 1, 0);
             isGhost = true;
+            _UIController.ChangeHeart(false);
             _spriteRoot.SetActive(true);
             _spriteRoot.transform.rotation = Quaternion.identity;
         }
@@ -340,5 +342,6 @@ public class PlayerController : MonoBehaviour
         elevator = false;
 
         isGhost = false;
+        _UIController.ChangeHeart(true);
     }
 }
